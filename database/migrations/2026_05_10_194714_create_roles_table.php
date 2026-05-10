@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('roles', function (Blueprint $table) {
             $table->id();
+            $table->string('name'); // Admin, Personel gibi rol isimleri bu sütunda tutulacak
             $table->timestamps();
         });
     }

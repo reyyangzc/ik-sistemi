@@ -2,24 +2,29 @@
 
 namespace Database\Seeders;
 
-use App\Models\User;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use App\Models\Role;
+use App\Models\Department;
+use App\Models\Position;
 
 class DatabaseSeeder extends Seeder
 {
-    use WithoutModelEvents;
-
-    /**
-     * Seed the application's database.
-     */
     public function run(): void
     {
-        // User::factory(10)->create();
+        // 1. Roller (Sistem ilk kurulduğunda ID'si 1 olan Admin, 2 olan Personel olacak)
+        Role::create(['name' => 'Admin']);
+        Role::create(['name' => 'Personel']);
 
-        User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
-        ]);
+        // 2. Departmanlar
+        Department::create(['name' => 'Yazılım']);
+        Department::create(['name' => 'İnsan Kaynakları']);
+        Department::create(['name' => 'Muhasebe']);
+        Department::create(['name' => 'Pazarlama']);
+
+        // 3. Ünvanlar
+        Position::create(['title' => 'Müdür']);
+        Position::create(['title' => 'Kıdemli Geliştirici (Senior)']);
+        Position::create(['title' => 'Uzman']);
+        Position::create(['title' => 'Asistan']);
     }
 }

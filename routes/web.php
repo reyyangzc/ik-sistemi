@@ -18,3 +18,12 @@ Route::middleware('auth')->group(function () {
 });
 
 require __DIR__.'/auth.php';
+
+use App\Http\Controllers\EmployeeController; // Bunu en üste, diğer use'ların yanına ekle
+
+// ... (Mevcut kodlar kalsın)
+
+// Giriş yapmış kullanıcıların (auth) erişebileceği Personel rotaları
+Route::middleware(['auth', 'verified'])->group(function () {
+    Route::resource('employees', EmployeeController::class);
+});
