@@ -60,10 +60,13 @@ public function index()
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
-    {
-        //
-    }
+   public function show(Employee $employee)
+{
+    // Eager Loading kullanarak tüm ilişkili tabloları tek seferde çekiyoruz (Performans için)
+    $employee->load(['education', 'documents', 'salaries', 'department', 'position']);
+    
+    return view('employees.show', compact('employee'));
+}
 
     /**
      * Show the form for editing the specified resource.
