@@ -48,20 +48,27 @@ class LeaveController extends Controller
         return redirect()->route('dashboard')->with('success', 'İzin talebiniz iletildi.');
     }
 
-    // 4. Admin Onaylama Mekanizması (PDF Madde: İçerik Güncelleme)
-   public function updateStatus(Request $request, Leave $leave)
-{
-    if (auth()->user()->role_id != 1) { abort(403); }
+// 4. Admin Onaylama Mekanizması ve Log Kaydı
+    public function updateStatus(Request $request, \App\Models\Leave $leave)
+    {
+        // 1. Yetki Kontrolü (Sadece Admin)
+        if (auth()->user()->role_id != 1) {
+            abort(403, 'Yetkisiz işlem.');
+        }
 
-    $leave->update(['status' => $request->status]);
+        $oldStatus = $leave->status;
+        $newStatus = $request->status; // 'approved' veya 'rejected' gelecek
 
-    // PDF Madde 68: İşlem Logu Kaydı
-    \App\Models\Log::create([
-        'user_id' => auth()->id(),
-        'action' => 'İzin Durumu Güncellendi',
-        'description' => $leave->employee->first_name . " isimli personelin izni " . $request->status . " yapıldı.",
-    ]);
+        // 2. Veritabanını Güncelle
+        $leave->update(['status' => $newStatus]);
 
-    return back()->with('success', 'İşlem tamamlandı ve loglandı.');
-}
+        // 3. İşlem Logu Kaydı
+        \App\Models\Log::create([
+            'user_id' => auth()->id(),
+            'action' => 'İzin Durumu Değiştirildi',
+            'description' => "{$leave->employee->first_name} isimli personelin izni '{$oldStatus}' durumundan '{$newStatus}' durumuna getirildi.",
+        ]);
+
+        return back()->with('success', 'İşlem başarıyla loglandı ve güncellendi.');
+    }
 }

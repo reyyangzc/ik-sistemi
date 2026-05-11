@@ -15,9 +15,11 @@ class DashboardController extends Controller
     
  public function index()
 {
+    // Duyuruları 'user' ilişkisiyle çek
     $announcements = \App\Models\Announcement::with('user')->latest()->take(5)->get();
     
     $stats = [];
+    // Sadece admin ise istatistikleri hesapla
     if (auth()->user()->role_id == 1) {
         $stats['employee_count'] = \App\Models\Employee::count();
         $stats['pending_leaves'] = \App\Models\Leave::where('status', 'pending')->count();

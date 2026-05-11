@@ -9,28 +9,59 @@ class Employee extends Model
 {
     use HasFactory;
 
+    /**
+     * Veritabanına toplu kayda izin verilen sütunlar.
+     */
     protected $fillable = [
+        'user_id', 
         'first_name', 
         'last_name', 
         'email', 
         'phone', 
-        'hire_date', 
-        'base_salary', 
         'department_id', 
-        'position_id'
+        'position_id', 
+        'salary',      // Veritabanındaki gerçek ad
+        'base_salary', // Formdan 'base_salary' olarak gelirse Laravel hata vermesin diye ekledik
+        'hire_date'
     ];
+
+    // --- İLİŞKİLER ---
+
+    // Bir personel bir departmana aittir
+    public function department()
+    {
+        return $this->belongsTo(Department::class);
+    }
+
+    // Bir personel bir pozisyona aittir (positions tablosundaki title'ı buradan çekeriz)
+    public function position()
+    {
+        return $this->belongsTo(Position::class);
+    }
+
+    // Bir personelin kullanıcı hesabı vardır
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+
     // Personelin eğitim bilgileri
-public function education() {
-    return $this->hasMany(Education::class);
-}
+    public function education() {
+        return $this->hasMany(Education::class);
+    }
 
-// Personelin belgeleri
-public function documents() {
-    return $this->hasMany(Document::class);
-}
+    // Personelin izin talepleri
+    public function leaveRequests() {
+        return $this->hasMany(LeaveRequest::class);
+    }
 
-// Personelin maaş geçmişi
-public function salaries() {
-    return $this->hasMany(Salary::class);
-}
+    // Personelin belgeleri
+    public function documents() {
+        return $this->hasMany(Document::class);
+    }
+
+    // Personelin maaş geçmişi
+    public function salaries() {
+        return $this->hasMany(Salary::class);
+    }
 }

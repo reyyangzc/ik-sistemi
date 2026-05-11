@@ -2,111 +2,132 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Employee;
+use App\Models\Department;
+use App\Models\Position;
+use App\Models\User;
+use App\Models\Log;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
 
 class EmployeeController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * Personel Listesi
      */
-public function index()
-{
-    // Veritabanındaki personelleri çekmeye çalışırız
-    // Eğer henüz Employee modelini veya tablosunu tam yapmadıysak burası hata verebilir
-    try {
-        $employees = \App\Models\Employee::all();
-    } catch (\Exception $e) {
-        $employees = []; // Hata alırsak boş liste gönderelim ki sayfa açılmasın
+    public function index()
+    {
+        $employees = Employee::with(['department', 'position'])->latest()->get();
+        return view('employees.index', compact('employees'));
     }
 
-    return view('employees.index', compact('employees'));
-}
     /**
-     * Show the form for creating a new resource.
+     * Yeni Personel Ekleme Formu
      */
-   public function create()
-{
-    // Veritabanındaki departmanları ve ünvanları çekiyoruz ki formda "Seçiniz" kutusunda gösterelim
-    $departments = \App\Models\Department::all();
-    $positions = \App\Models\Position::all();
-
-    // employees klasöründeki create sayfasını aç ve bu verileri oraya gönder
-    return view('employees.create', compact('departments', 'positions'));
-}
-
-    /**
-     * Store a newly created resource in storage.
-     */
-  public function store(Request $request)
+    public function create()
     {
-        // 1. Formdan gelen verileri alıp doğruluyoruz
+        $departments = Department::all();
+        $positions = Position::all();
+        return view('employees.create', compact('departments', 'positions'));
+    }
+
+    /**
+     * Kayıt İşlemi
+     */
+public function store(Request $request)
+{
+    try {
         $validated = $request->validate([
-            'first_name' => 'required|string|max:255',
-            'last_name'  => 'required|string|max:255',
-            'email'      => 'required|email|unique:employees,email',
-            'phone'      => 'nullable|string|max:20',
-            'hire_date'  => 'required|date',
-            'base_salary'=> 'required|numeric',
-            'department_id' => 'required|exists:departments,id',
-            'position_id'   => 'required|exists:positions,id',
+            'first_name'    => 'required|string|max:255',
+            'last_name'     => 'required|string|max:255',
+            'email'         => 'required|email|unique:employees,email|unique:users,email',
+            'department_id' => 'required',
+            'position_id'   => 'required',
+            'hire_date'     => 'required|date',
+            'base_salary'   => 'required|numeric',
         ]);
 
-        // 2. Doğrulanan veriyi veritabanına kaydet
-        \App\Models\Employee::create($validated);
+        // 1. Kullanıcı Oluştur (E-posta çakışmaması için burada unique kontrolü yaptık)
+        $user = \App\Models\User::create([
+            'name'     => $request->first_name . ' ' . $request->last_name,
+            'email'    => $request->email,
+            'password' => \Illuminate\Support\Facades\Hash::make('12345678'),
+            'role_id'  => 2, 
+        ]);
 
-        // 3. İşlem bitince personel listesi sayfasına geri dön
-        return redirect()->route('employees.index');
+        // 2. Personel Oluştur
+        $employeeData = $validated;
+        $employeeData['user_id'] = $user->id; // Hesabı bağladık
+        
+        $employee = \App\Models\Employee::create($employeeData);
+
+        // 3. Log Kaydı (Artık fillable olduğu için hata vermeyecek)
+        \App\Models\Log::create([
+            'user_id' => auth()->id(),
+            'action'  => 'Personel Tanımlama',
+            'description' => "{$employee->first_name} {$employee->last_name} eklendi."
+        ]);
+
+        return redirect()->route('employees.index')->with('success', 'Personel başarıyla kadroya alındı!');
+
+    } catch (\Illuminate\Validation\ValidationException $e) {
+        // E-posta hatası alırsan seni siyah ekrana değil, kırmızı kutuya atsın:
+        return redirect()->back()->withErrors($e->validator)->withInput();
+    } catch (\Exception $e) {
+        dd("HATA MESAJI: " . $e->getMessage());
     }
-    /**
-     * Display the specified resource.
-     */
-   public function show(Employee $employee)
-{
-    // Eager Loading kullanarak tüm ilişkili tabloları tek seferde çekiyoruz (Performans için)
-    $employee->load(['education', 'documents', 'salaries', 'department', 'position']);
-    
-    return view('employees.show', compact('employee'));
 }
-
     /**
-     * Show the form for editing the specified resource.
+     * Güncelleme
      */
-    public function edit(\App\Models\Employee $employee)
-{
-    // Veritabanındaki tüm departman ve ünvanları çekiyoruz (dropdownlar için)
-    $departments = \App\Models\Department::all();
-    $positions = \App\Models\Position::all();
+    public function update(Request $request, Employee $employee)
+    {
+        try {
+            $validated = $request->validate([
+                'first_name'    => 'required|string|max:255',
+                'last_name'     => 'required|string|max:255',
+                'email'         => 'required|email|unique:employees,email,'.$employee->id,
+                'phone'         => 'nullable|string|max:20',
+                'hire_date'     => 'required|date',
+                'base_salary'   => 'required|numeric',
+                'department_id' => 'required|exists:departments,id',
+                'position_id'   => 'required|exists:positions,id',
+            ]);
 
-    // Personel bilgileriyle birlikte edit sayfasına gönderiyoruz
-    return view('employees.edit', compact('employee', 'departments', 'positions'));
-}
+            $employee->update($validated);
 
-    /**
-     * Update the specified resource in storage.
-     */
-   public function update(Request $request, \App\Models\Employee $employee)
-{
-    $validated = $request->validate([
-        'first_name' => 'required|string|max:255',
-        'last_name'  => 'required|string|max:255',
-        'email'      => 'required|email|unique:employees,email,'.$employee->id,
-        'phone'      => 'nullable|string|max:20',
-        'hire_date'  => 'required|date',
-        'base_salary'=> 'required|numeric',
-        'department_id' => 'required|exists:departments,id',
-        'position_id'   => 'required|exists:positions,id',
-    ]);
+            Log::create([
+                'user_id' => auth()->id(),
+                'action' => 'Personel Güncelleme',
+                'description' => "{$employee->first_name} {$employee->last_name} adlı personelin bilgileri güncellendi."
+            ]);
 
-    $employee->update($validated);
-    return redirect()->route('employees.index');
-}
+            return redirect()->route('employees.index')->with('success', 'Bilgiler başarıyla güncellendi.');
+            
+        } catch (\Exception $e) {
+            dd("GÜNCELLEME HATASI:", $e->getMessage());
+        }
+    }
 
     /**
-     * Remove the specified resource from storage.
+     * Silme
      */
-   public function destroy(\App\Models\Employee $employee)
-{
-    $employee->delete();
-    return redirect()->route('employees.index');
-}
+    public function destroy(Employee $employee)
+    {
+        $name = $employee->first_name . ' ' . $employee->last_name;
+        
+        if($employee->user_id) {
+            User::where('id', $employee->user_id)->delete();
+        }
+
+        $employee->delete();
+
+        Log::create([
+            'user_id' => auth()->id(),
+            'action' => 'Personel Çıkışı',
+            'description' => "{$name} sistemden ve kadrodan çıkarıldı."
+        ]);
+
+        return redirect()->route('employees.index')->with('success', 'Personel sistemden tamamen silindi.');
+    }
 }
