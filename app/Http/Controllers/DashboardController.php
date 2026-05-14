@@ -21,7 +21,7 @@ class DashboardController extends Controller
             // Bekleyen Talepler
             $stats['pending_leaves'] = \App\Models\LeaveRequest::where('status', 'pending')->count();
             $stats['pending_expenses'] = \App\Models\ExpenseRequest::where('status', 'pending')->count();
-            $stats['pending_profiles'] = \App\Models\ProfileUpdateRequest::where('status', 'pending')->count();
+            $stats['pending_profiles'] = \App\Models\ProfileChangeRequest::where('status', 'pending')->count();
             $stats['total_pending'] = $stats['pending_leaves'] + $stats['pending_expenses'] + $stats['pending_profiles'];
             
             // Bugün İzinli Olanlar
