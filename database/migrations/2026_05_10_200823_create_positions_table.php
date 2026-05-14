@@ -13,7 +13,8 @@ return new class extends Migration
 {
     Schema::create('positions', function (Blueprint $table) {
         $table->id();
-        $table->string('title'); // Ünvan adı (Müdür, Asistan vb.)
+        $table->string('name'); // Ünvan adı
+        $table->foreignId('department_id')->constrained()->onDelete('cascade');
         $table->timestamps();
     });
 }

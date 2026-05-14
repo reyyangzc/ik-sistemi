@@ -1,140 +1,101 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="font-serif italic text-2xl text-gray-800">— İzin Yönetimi</h2>
+        <div class="flex justify-between items-center">
+            <h2 class="font-bold text-3xl text-gray-800 tracking-tight">
+                Talep Havuzu (İzinler)
+            </h2>
+            <a href="{{ route('leaves.create') }}" class="btn-primary flex items-center space-x-2">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+                <span>İzin Talep Et</span>
+            </a>
+        </div>
     </x-slot>
 
-    <div class="py-12 bg-gray-50 min-h-screen">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
-
-            <div class="max-w-full">
-                @if (session('success'))
-                    <div class="mb-4 bg-emerald-50 border border-emerald-100 text-emerald-600 px-4 py-3 text-[11px] font-black uppercase tracking-widest">
-                        {{ session('success') }}
-                    </div>
-                @endif
-
-                @if ($errors->any())
-                    <div class="mb-4 bg-red-50 border border-red-100 text-red-600 px-4 py-3 text-[11px] font-black uppercase tracking-widest">
-                        Hata oluştu:
-                        <ul class="mt-2 font-mono text-[10px] normal-case tracking-normal">
-                            @foreach ($errors->all() as $error)
-                                <li>- {{ $error }}</li>
-                            @endforeach
-                        </ul>
-                    </div>
-                @endif
+    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+        
+        @if(session('success'))
+            <div class="m-6 p-4 bg-green-50 border border-green-200 text-green-700 rounded-xl flex items-center space-x-3">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                <span>{{ session('success') }}</span>
             </div>
+        @endif
 
-            @if(auth()->user()->role_id == 1)
-                <div class="bg-white p-8 border border-gray-100 shadow-sm">
-                    <h3 class="text-[11px] font-black uppercase tracking-[0.3em] mb-6 border-b pb-4">Bekleyen & Onaylanan Talepler</h3>
-                    
-                    <div class="overflow-x-auto">
-                        <table class="w-full text-left border-collapse">
-                            <thead>
-                                <tr class="text-[10px] uppercase tracking-widest text-gray-400 border-b border-gray-100">
-                                    <th class="pb-3 font-bold">Personel</th>
-                                    <th class="pb-3 font-bold">Tür</th>
-                                    <th class="pb-3 font-bold">Tarih Aralığı</th>
-                                    <th class="pb-3 font-bold">Durum</th>
-                                    <th class="pb-3 font-bold text-right">İşlem</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @forelse($requests ?? [] as $req)
-                                    <tr class="border-b border-gray-50 hover:bg-gray-50/50 transition-colors">
-                                        <td class="py-4 font-serif italic text-gray-900 text-lg">
-                                            {{ $req->employee?->first_name ?? 'Bilinmeyen' }} {{ $req->employee?->last_name ?? 'Personel' }}
-                                        </td>
-                                        <td class="py-4 text-xs font-bold text-gray-600">{{ $req->type }}</td>
-                                        <td class="py-4 text-xs font-mono text-gray-500">
-                                            {{ \Carbon\Carbon::parse($req->start_date)->format('d.m.Y') }} - {{ \Carbon\Carbon::parse($req->end_date)->format('d.m.Y') }}
-                                        </td>
-                                        <td class="py-4">
-                                            @if($req->status == 'pending')
-                                                <span class="bg-yellow-100 text-yellow-700 px-3 py-1 rounded-full text-[9px] font-bold uppercase tracking-widest">Bekliyor</span>
-                                            @elseif($req->status == 'approved')
-                                                <span class="bg-emerald-100 text-emerald-700 px-3 py-1 rounded-full text-[9px] font-bold uppercase tracking-widest">Onaylandı</span>
-                                            @else
-                                                <span class="bg-red-100 text-red-700 px-3 py-1 rounded-full text-[9px] font-bold uppercase tracking-widest">Reddedildi</span>
-                                            @endif
-                                        </td>
-                                        <td class="py-4 flex justify-end space-x-2">
-                                            @if($req->status == 'pending')
-                                                <form action="{{ route('leaves.status', $req) }}" method="POST">
-                                                    @csrf @method('PATCH')
-                                                    <input type="hidden" name="status" value="approved">
-                                                    <button type="submit" class="text-[10px] bg-black text-white px-3 py-1.5 font-bold uppercase hover:bg-emerald-600 transition-colors">Onayla</button>
-                                                </form>
-                                                <form action="{{ route('leaves.status', $req) }}" method="POST">
-                                                    @csrf @method('PATCH')
-                                                    <input type="hidden" name="status" value="rejected">
-                                                    <button type="submit" class="text-[10px] border border-gray-200 text-gray-600 px-3 py-1.5 font-bold uppercase hover:bg-red-50 hover:text-red-600 hover:border-red-200 transition-colors">Reddet</button>
-                                                </form>
-                                            @else
-                                                <form action="{{ route('leaves.destroy', $req) }}" method="POST">
-                                                    @csrf @method('DELETE')
-                                                    <button type="submit" class="text-[10px] text-gray-400 hover:text-red-600 font-bold uppercase underline transition-colors">Kaldır</button>
-                                                </form>
-                                            @endif
-                                        </td>
-                                    </tr>
-                                @empty
-                                    <tr>
-                                        <td colspan="5" class="py-8 text-center text-xs font-mono text-gray-400 uppercase tracking-widest">Sistemde izin talebi bulunmuyor.</td>
-                                    </tr>
-                                @endforelse
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-
-            @else
-                <div class="bg-white p-8 border border-gray-100 shadow-sm">
-                    <h3 class="text-[11px] font-black uppercase tracking-[0.3em] mb-6">Yeni İzin Talebi</h3>
-                    <form action="{{ route('leaves.store') }}" method="POST" class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                        @csrf
-                        
-                        <div>
-                            <label class="text-[10px] font-bold uppercase text-gray-400">Talep Eden</label>
-                            <input type="text" value="{{ Auth::user()->name }}" class="w-full border-gray-100 bg-gray-50 text-gray-400 text-sm cursor-not-allowed" disabled>
-                            
-                            @php
-                                $empId = \App\Models\Employee::where('user_id', auth()->id())->first()?->id;
-                            @endphp
-                            
-                            <input type="hidden" name="employee_id" value="{{ $empId }}">
-                            
-                            @if(!$empId)
-                                <p class="text-[9px] text-red-500 mt-1 font-bold italic">UYARI: Personel kaydınız bulunamadı!</p>
+        <div class="overflow-x-auto">
+            <table class="w-full text-sm text-left">
+                <thead class="text-xs text-gray-500 uppercase bg-gray-50/50 border-b border-gray-100">
+                    <tr>
+                        <th class="px-6 py-4 font-semibold">Personel</th>
+                        <th class="px-6 py-4 font-semibold">İzin Türü</th>
+                        <th class="px-6 py-4 font-semibold">Açıklama</th>
+                        <th class="px-6 py-4 font-semibold">Başlangıç - Bitiş</th>
+                        <th class="px-6 py-4 font-semibold">Durum</th>
+                        <th class="px-6 py-4 font-semibold text-right">İşlemler</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-50">
+                    @forelse($leaves as $leave)
+                    <tr class="hover:bg-gray-50/50 transition-colors">
+                        <td class="px-6 py-4 font-medium text-gray-800">
+                            {{ $leave->employee->first_name ?? 'Bilinmiyor' }} {{ $leave->employee->last_name ?? '' }}
+                        </td>
+                        <td class="px-6 py-4">
+                            {{ $leave->type ?? 'Diğer' }}
+                        </td>
+                        <td class="px-6 py-4 text-gray-500 max-w-xs truncate" title="{{ $leave->reason }}">
+                            {{ $leave->reason ?? '-' }}
+                        </td>
+                        <td class="px-6 py-4 text-gray-600">
+                            {{ \Carbon\Carbon::parse($leave->start_date)->format('d.m.Y') }} - {{ \Carbon\Carbon::parse($leave->end_date)->format('d.m.Y') }}
+                        </td>
+                        <td class="px-6 py-4">
+                            @if($leave->status == 'approved')
+                                <span class="px-3 py-1 bg-green-100 text-green-700 rounded-full text-xs font-semibold">Onaylandı</span>
+                            @elseif($leave->status == 'rejected')
+                                <span class="px-3 py-1 bg-red-100 text-red-700 rounded-full text-xs font-semibold">Reddedildi</span>
+                            @elseif($leave->status == 'suspended')
+                                <span class="px-3 py-1 bg-gray-100 text-gray-700 rounded-full text-xs font-semibold">Bekletiliyor</span>
+                            @else
+                                <span class="px-3 py-1 bg-amber-100 text-amber-700 rounded-full text-xs font-semibold">Beklemede</span>
                             @endif
-                        </div>
-
-                        <div>
-                            <label class="text-[10px] font-bold uppercase text-gray-400">Başlangıç</label>
-                            <input type="date" name="start_date" class="w-full border-gray-200 focus:border-black focus:ring-0 text-sm" required>
-                        </div>
-                        <div>
-                            <label class="text-[10px] font-bold uppercase text-gray-400">Bitiş</label>
-                            <input type="date" name="end_date" class="w-full border-gray-200 focus:border-black focus:ring-0 text-sm" required>
-                        </div>
-                       <div class="md:col-span-2">
-    <label class="text-[10px] font-bold uppercase text-gray-400">İzin Türü</label>
-    <select name="type" class="w-full border-gray-200 focus:border-black focus:ring-0 text-sm">
-        <option value="Yıllık İzin">Yıllık İzin</option>
-        <option value="Hastalık">Hastalık</option>
-        <option value="Mazeret">Mazeret İzni</option>
-    </select>
-</div>
-                        <div class="flex items-end">
-                            <button type="submit" class="w-full bg-black text-white py-3 text-[10px] font-black uppercase tracking-widest hover:bg-indigo-600 transition-all">
-                                TALEBİ GÖNDER
-                            </button>
-                        </div>
-                    </form>
-                </div>
-            @endif
-
+                        </td>
+                        <td class="px-6 py-4 text-right">
+                            @if(auth()->user()->role_id == 1 && $leave->status == 'pending')
+                                <div class="flex items-center justify-end space-x-2">
+                                    <form action="{{ route('leaves.status', $leave) }}" method="POST">
+                                        @csrf
+                                        @method('PATCH')
+                                        <input type="hidden" name="status" value="approved">
+                                        <button type="submit" class="p-2 text-green-600 hover:bg-green-50 rounded-lg transition-colors" title="Onayla">
+                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                                        </button>
+                                    </form>
+                                    <form action="{{ route('leaves.status', $leave) }}" method="POST">
+                                        @csrf
+                                        @method('PATCH')
+                                        <input type="hidden" name="status" value="suspended">
+                                        <button type="submit" class="p-2 text-gray-600 hover:bg-gray-50 rounded-lg transition-colors" title="Beklet">
+                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                        </button>
+                                    </form>
+                                    <form action="{{ route('leaves.status', $leave) }}" method="POST">
+                                        @csrf
+                                        @method('PATCH')
+                                        <input type="hidden" name="status" value="rejected">
+                                        <button type="submit" class="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors" title="Reddet">
+                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                                        </button>
+                                    </form>
+                                </div>
+                            @endif
+                        </td>
+                    </tr>
+                    @empty
+                    <tr>
+                        <td colspan="5" class="px-6 py-12 text-center text-gray-500">Sistemde izin talebi bulunmuyor.</td>
+                    </tr>
+                    @endforelse
+                </tbody>
+            </table>
         </div>
     </div>
 </x-app-layout>

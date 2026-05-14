@@ -22,7 +22,11 @@ class Employee extends Model
         'position_id', 
         'salary',      // Veritabanındaki gerçek ad
         'base_salary', // Formdan 'base_salary' olarak gelirse Laravel hata vermesin diye ekledik
-        'hire_date'
+        'hire_date',
+        'birth_date',
+        'marital_status',
+        'children_count',
+        'leave_balance'
     ];
 
     // --- İLİŞKİLER ---
@@ -63,5 +67,10 @@ class Employee extends Model
     // Personelin maaş geçmişi
     public function salaries() {
         return $this->hasMany(Salary::class);
+    }
+
+    // Personelin şikayet ve istekleri
+    public function complaints() {
+        return $this->hasMany(Complaint::class);
     }
 }

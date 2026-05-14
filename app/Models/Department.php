@@ -6,10 +6,14 @@ use Illuminate\Database\Eloquent\Model;
 
 class Department extends Model
 {
-    // BURAYA EKLE (Sınıfın hemen girişi gibi düşün)
     protected $fillable = ['name'];
 
-    // Eğer varsa senin ilişkin aşağıda kalmalı:
+    // Bu satır çok önemli; Departman üzerinden ünvanlara ulaşmamızı sağlar
+    public function positions()
+    {
+        return $this->hasMany(Position::class);
+    }
+
     public function employees()
     {
         return $this->hasMany(Employee::class);

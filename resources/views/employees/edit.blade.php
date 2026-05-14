@@ -44,6 +44,29 @@
                         </div>
 
                         <div>
+                            <label class="block font-medium text-sm text-gray-700">Doğum Tarihi</label>
+                            <input type="date" name="birth_date" value="{{ old('birth_date', $employee->birth_date) }}" class="border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm block mt-1 w-full">
+                        </div>
+
+                        <div>
+                            <label class="block font-medium text-sm text-gray-700">Medeni Durum</label>
+                            <select name="marital_status" class="border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm block mt-1 w-full" required>
+                                <option value="single" {{ old('marital_status', $employee->marital_status) == 'single' ? 'selected' : '' }}>Bekar</option>
+                                <option value="married" {{ old('marital_status', $employee->marital_status) == 'married' ? 'selected' : '' }}>Evli</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label class="block font-medium text-sm text-gray-700">Çocuk Sayısı</label>
+                            <input type="number" name="children_count" value="{{ old('children_count', $employee->children_count) }}" min="0" class="border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm block mt-1 w-full" required>
+                        </div>
+
+                        <div>
+                            <label class="block font-medium text-sm text-gray-700">Yıllık İzin Hakkı (Gün)</label>
+                            <input type="number" name="leave_balance" value="{{ old('leave_balance', $employee->leave_balance) }}" min="0" class="border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm block mt-1 w-full" required>
+                        </div>
+
+                        <div>
                             <label class="block font-medium text-sm text-gray-700">Departman</label>
                             <select name="department_id" class="border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm block mt-1 w-full" required>
                                 <option value="">Seçiniz...</option>

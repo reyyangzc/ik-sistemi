@@ -12,8 +12,24 @@ export default {
     theme: {
         extend: {
             fontFamily: {
-                sans: ['Figtree', ...defaultTheme.fontFamily.sans],
+                sans: ['Inter', ...defaultTheme.fontFamily.sans],
             },
+            colors: {
+                glass: {
+                    DEFAULT: 'rgba(255, 255, 255, 0.7)',
+                    dark: 'rgba(17, 24, 39, 0.7)'
+                },
+                primary: {
+                    50: '#f0f9ff',
+                    100: '#e0f2fe',
+                    500: '#0ea5e9',
+                    600: '#0284c7',
+                    900: '#0c4a6e',
+                }
+            },
+            backdropBlur: {
+                xs: '2px',
+            }
         },
     },
 

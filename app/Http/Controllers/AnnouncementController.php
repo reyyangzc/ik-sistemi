@@ -7,14 +7,12 @@ use Illuminate\Http\Request;
 
 class AnnouncementController extends Controller
 {
-    // Duyuruları listeleme ve ekleme formu sayfası
     public function index()
     {
         $announcements = Announcement::latest()->get();
         return view('announcements.index', compact('announcements'));
     }
 
-    // Yeni duyuruyu veritabanına kaydetme
     public function store(Request $request)
     {
         $request->validate([
@@ -25,16 +23,35 @@ class AnnouncementController extends Controller
         Announcement::create([
             'title' => $request->title,
             'content' => $request->content,
-            'user_id' => auth()->id(), // Giriş yapan adminin ID'si
+            'user_id' => auth()->id(),
         ]);
 
         return redirect()->back()->with('success', 'Duyuru başarıyla yayınlandı.');
     }
 
-    // Duyuru silme
+    public function edit(Announcement $announcement)
+    {
+        return view('announcements.edit', compact('announcement'));
+    }
+
+    public function update(Request $request, Announcement $announcement)
+    {
+        $request->validate([
+            'title' => 'required|string|max:255',
+            'content' => 'required',
+        ]);
+
+        $announcement->update([
+            'title' => $request->title,
+            'content' => $request->content,
+        ]);
+
+        return redirect()->route('announcements.index')->with('success', 'Duyuru güncellendi.');
+    }
+
     public function destroy(Announcement $announcement)
     {
         $announcement->delete();
-        return redirect()->back()->with('success', 'Duyuru silindi.');
+        return redirect()->route('announcements.index')->with('success', 'Duyuru silindi.');
     }
 }

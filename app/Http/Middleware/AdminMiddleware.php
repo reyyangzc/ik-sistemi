@@ -13,13 +13,12 @@ class AdminMiddleware
      *
      * @param  Closure(Request): (Response)  $next
      */
-   public function handle($request, Closure $next)
-{
-    // Eğer giriş yapılmışsa, role bakmaksızın devam et (Geçici Test)
-    if (auth()->check()) {
-        return $next($request);
+    public function handle($request, Closure $next)
+    {
+        if (auth()->check() && auth()->user()->role_id == 1) {
+            return $next($request);
+        }
+        
+        return redirect()->route('dashboard')->withErrors(['message' => 'Bu sayfaya erişim yetkiniz yok.']);
     }
-    
-    return redirect('login');
-}
 }

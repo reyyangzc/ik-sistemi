@@ -13,7 +13,11 @@ class Salary extends Model
     protected $fillable = [
         'employee_id',
         'amount',
-        'payment_date'
+        'bonus',
+        'deduction',
+        'net_salary',
+        'payment_date',
+        'notes'
     ];
 
     /**
