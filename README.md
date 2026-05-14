@@ -1,59 +1,29 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# İK ve Personel Yönetim Sistemi
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Bu proje, şirket içi süreçleri dijitalleştirerek İnsan Kaynakları ve çalışanlar arasındaki bilgi akışını hızlandırmak için geliştirilmiş kapsamlı bir İK yönetim sistemidir. Sistem temel olarak iki ana panelden oluşur:
 
-## About Laravel
+## 1. Admin (İK ve Yönetici) Paneli
+Admin paneli, tüm şirketin kuş bakışı görünümünü sağlar. Burası verinin işlendiği, onayların verildiği ve raporların çekildiği merkezdir.
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+**Stratejik ve Operasyonel Modüller:**
+- **Dashboard (Özet Ekranı):** Toplam çalışan sayısı, o gün izinli olanlar, yaklaşan doğum günleri ve bekleyen onay taleplerinin grafiksel özeti.
+- **Personel Kartı Yönetimi:** Çalışanın tüm özlük bilgilerinin (sözleşme, eğitim, sertifika, zimmet) tutulduğu dijital dosya.
+- **İzin ve Devamsızlık Yönetimi:** Tüm personelin izin taleplerini onaylama/reddetme, yıllık izin bakiyelerini toplu yönetme.
+- **Bordro ve Yan Haklar:** Maaş hesaplamaları, AGİ, prim, kesinti ve yemek kartı gibi yan hakların takibi.
+- **İşe Alım ve Onboarding:** Açık pozisyon yönetimi, aday havuzu ve yeni başlayanlar için oryantasyon süreçleri.
+- **Performans ve Değerlendirme:** 360 derece değerlendirmeler, KPI takibi ve geri bildirim formlarının oluşturulması.
+- **Raporlama ve Analitik:** Turnover (işten ayrılma) oranı, departman bazlı maliyetler ve verimlilik raporları.
+- **Zimmet Takibi:** Laptop, telefon, araç gibi şirket demirbaşlarının kime atandığının yönetimi.
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## 2. Personel (Self-Servis) Paneli
+Personel paneli, çalışanın İK departmanına bağımlılığını azaltan, "kendi işini kendin yap" (self-service) mantığıyla kurgulanmış bir arayüzdür.
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
-
-## Learning Laravel
-
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
-
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
-
-## Laravel Sponsors
-
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
-
-### Premium Partners
-
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
-
-## Contributing
-
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
-
-## Code of Conduct
-
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
-
-## Security Vulnerabilities
-
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
-
-## License
-
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+**Kişisel ve Etkileşimli Modüller:**
+- **Profilim:** Kişisel bilgileri görüntüleme ve (onaya tabi şekilde) güncelleme talebi gönderme.
+- **İzin Talebi:** Kalan izin günlerini görme, yeni izin talebi oluşturma ve geçmiş izinleri takip etme.
+- **Bordro Görüntüleme:** Güncel ve geçmiş aylara ait maaş pusulalarını (PDF formatında) indirme.
+- **Harcama ve Avans Talebi:** İş seyahatleri veya masraflar için fiş yükleme ve avans isteme.
+- **Zimmetlerim:** Üzerine kayıtlı olan cihaz ve ekipmanların listesi.
+- **Eğitim ve Gelişim:** Kendisine atanan online eğitimleri tamamlama ve gelişim yolculuğunu izleme.
+- **Şirket Rehberi:** Diğer çalışanların iletişim bilgilerine ve organizasyon şemasına ulaşım.
+- **Duyurular ve Anketler:** Şirket içi haberleri takip etme ve memnuniyet anketlerine katılım.
