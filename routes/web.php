@@ -19,7 +19,7 @@ Route::get('/', function () {
 
 // 2. Giriş Yapmış Tüm Kullanıcılar (Admin + Personel)
 Route::middleware(['auth', 'verified'])->group(function () {
-    
+
     // Ortak Dashboard
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
@@ -44,7 +44,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     // Şikayetler (Personel Ekleme)
     Route::post('/complaints', [ComplaintController::class, 'store'])->name('complaints.store');
-    
+
     // Maaş Bordroları (Görüntüleme ve İndirme)
     Route::get('/salaries', [SalaryController::class, 'index'])->name('salaries.index');
     Route::get('/salaries/{salary}/pdf', [SalaryController::class, 'downloadPdf'])->name('salaries.pdf');
@@ -59,7 +59,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // İK ve Kurumsal (Performans, Eğitimler, Anketler)
     Route::get('/performance', [\App\Http\Controllers\PerformanceReviewController::class, 'index'])->name('performance.index');
     Route::get('/trainings', [\App\Http\Controllers\TrainingController::class, 'index'])->name('trainings.index');
-    
+
     // Anketler
     Route::get('/surveys', [\App\Http\Controllers\SurveyController::class, 'index'])->name('surveys.index');
     Route::get('/surveys/{survey}', [\App\Http\Controllers\SurveyController::class, 'show'])->name('surveys.show');
@@ -71,10 +71,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
 // 3. SADECE ADMİNLERİN Erişebileceği Rotalar
 Route::middleware(['auth', 'admin'])->group(function () {
-    
+
     // Personel Yönetimi
     Route::resource('employees', EmployeeController::class);
-    
+
     // Departman ve Pozisyon Yönetimi
     Route::resource('departments', DepartmentController::class);
     Route::resource('positions', PositionController::class);
@@ -94,7 +94,7 @@ Route::middleware(['auth', 'admin'])->group(function () {
 
     // Sistem Hareketleri (Loglar)
     Route::get('/logs', [LogController::class, 'index'])->name('logs.index');
-    
+
     // HR Modülleri Admin İşlemleri
     Route::resource('performance', \App\Http\Controllers\PerformanceReviewController::class)->except(['show', 'index']);
     Route::resource('trainings', \App\Http\Controllers\TrainingController::class)->except(['show', 'index']);
@@ -122,6 +122,18 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::get('/recruitment/{posting}/candidates', [\App\Http\Controllers\RecruitmentController::class, 'candidates'])->name('recruitment.candidates');
     Route::post('/recruitment/{posting}/candidates', [\App\Http\Controllers\RecruitmentController::class, 'addCandidate'])->name('recruitment.candidates.store');
     Route::patch('/recruitment/candidates/{candidate}/status', [\App\Http\Controllers\RecruitmentController::class, 'updateCandidateStatus'])->name('recruitment.candidates.status');
+    Route::get('/veritabani-kur', function () {
+    \Illuminate\Support\Facades\Artisan::call('migrate', [
+        '--force' => true
+    ]);
+
+    // (Opsiyonel) Eğer seeder dosyaların varsa:
+    \Illuminate\Support\Facades\Artisan::call('db:seed', [
+        '--force' => true
+    ]);
+
+    return 'İşlem tamam Ci! Tablolar ve örnek veriler başarıyla oluşturuldu.';
+});
 });
 
 require __DIR__.'/auth.php';
